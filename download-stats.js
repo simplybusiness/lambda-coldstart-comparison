@@ -1,7 +1,6 @@
 'use strict';
 
 const _           = require('lodash');
-const co          = require('co');
 const AWS         = require('aws-sdk');
 AWS.config.region = 'eu-west-1';
 const cloudwatch  = new AWS.CloudWatch();
@@ -13,8 +12,8 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 
 let addDays = (startDt, n) => new Date(startDt.getTime() + ONE_DAY * n);
 
-let getFuncStats = co.wrap(function* (funcName) {
-  let getStats = co.wrap(function* (startTime, endTime) {
+let getFuncStats = async function(funcName) {
+  let getStats = async function(startTime, endTime) {
     let req = {
       MetricName: 'Duration',
       Namespace: 'AWS/Lambda',
@@ -25,7 +24,7 @@ let getFuncStats = co.wrap(function* (funcName) {
       StartTime: startTime,
       EndTime: endTime
     };
-    let resp = yield cloudwatch.getMetricStatistics(req).promise();
+    let resp = await cloudwatch.getMetricStatistics(req).promise();
 
     return resp.Datapoints.map(dp => {
       return {
@@ -33,7 +32,7 @@ let getFuncStats = co.wrap(function* (funcName) {
         value: dp.Maximum
       };
     });
-  });
+  };
 
   let stats = [];
   for (let i = 0; i < DAYS; i++) {
@@ -41,18 +40,18 @@ let getFuncStats = co.wrap(function* (funcName) {
     // at 1 min period is 24 hours
     let startTime = addDays(START_TIME, i);
     let endTime   = addDays(startTime, 1);
-    let oneDayStats = yield getStats(startTime, endTime);
+    let oneDayStats = await getStats(startTime, endTime);
 
     stats = stats.concat(oneDayStats);
   }
 
   return _.sortBy(stats, s => s.timestamp);
-});
+};
 
-let listFunctions = co.wrap(function* (marker, acc) {
+let listFunctions = async function(marker, acc) {
   acc = acc || [];
 
-  let resp = yield Lambda.listFunctions({ Marker: marker, MaxItems: 100 }).promise();
+  let resp = await Lambda.listFunctions({ Marker: marker, MaxItems: 100 }).promise();
 
   let functions = resp.Functions
     .map(f => f.FunctionName)
@@ -61,16 +60,17 @@ let listFunctions = co.wrap(function* (marker, acc) {
   acc = acc.concat(functions);
 
   if (resp.NextMarker) {
-    return yield listFunctions(resp.NextMarker, acc);
+    return await listFunctions(resp.NextMarker, acc);
   } else {
     return acc;
   }
-});
+};
 
 listFunctions()
-  .then(co.wrap(function* (funcs) {
+  .then(async function(funcs) {
     for (let func of funcs) {
-      let stats = yield getFuncStats(func);
+      let stats = await getFuncStats(func);
       stats.forEach(stat => console.log(`${func},${stat.timestamp},${stat.value}`));
+      break;
     }
-  }));
+  });
