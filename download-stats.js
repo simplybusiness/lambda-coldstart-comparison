@@ -71,6 +71,5 @@ listFunctions()
     for (let func of funcs) {
       let stats = await getFuncStats(func);
       stats.forEach(stat => console.log(`${func},${stat.timestamp},${stat.value}`));
-      break;
     }
   });
