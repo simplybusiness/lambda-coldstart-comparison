@@ -1,5 +1,5 @@
 #!/bin/bash
-declare -a folders=("python" "nodejs6")
+declare -a folders=("python" "nodejs6" "ruby25" "ruby25vpc")
 
 # export AWS_PROFILE=personal
 
