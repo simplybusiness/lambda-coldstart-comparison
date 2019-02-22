@@ -52,7 +52,7 @@ let boxPlot = co.wrap(function*() {
     nodejs6: { y: [], x: [], type: "box", boxpoints: "all", name: "nodejs6" }
   }
 
-  rows.forEach(row => {  
+  rows.forEach(row => {
     byLang[row.lang].y.push(row.value);
     byLang[row.lang].x.push(`${row.memorySize}MB`);
   });
@@ -70,21 +70,21 @@ let boxPlot = co.wrap(function*() {
   };
 
   let graphOptions = { filename: "cold-start-by-language", fileopt: "overwrite" };
-  plotly.plot(data, graphOptions, function (err, msg) {    
+  plotly.plot(data, graphOptions, function (err, msg) {
     let childProc = require('child_process');
     console.log(msg);
 
     childProc.exec(`open -a "Google Chrome" ${msg.url}`);
   });
-  
+
 });
 
 let calcStats = co.wrap(function*() {
   let rows = yield readStats();
   let byCodeSize = _.groupBy(rows, r => `${r.codeSize}-${r.memorySize}MB`);
-  
+
   let statsByCodeSize = _.mapValues(
-    byCodeSize, 
+    byCodeSize,
     rs => {
       let values = rs.map(r => r.value);
       let stats = new Stats();
