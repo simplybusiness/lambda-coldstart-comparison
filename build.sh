@@ -1,7 +1,7 @@
 #!/bin/bash
 declare -a folders=("python" "nodejs6")
 
-export AWS_PROFILE=personal
+# export AWS_PROFILE=personal
 
 for i in `seq 1 10`;
 do
