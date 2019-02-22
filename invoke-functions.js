@@ -2,7 +2,7 @@
 
 const co      = require('co');
 const AWS     = require('aws-sdk');
-AWS.config.region = 'us-east-1';
+AWS.config.region = 'eu-west-1';
 const Lambda  = new AWS.Lambda();
 
 let functions = [];
@@ -30,7 +30,7 @@ let run = co.wrap(function* () {
     console.log("fetching relevant functions...");
 
     functions = yield listFunctions();
-    console.log(`found ${functions.length} functions`);        
+    console.log(`found ${functions.length} functions`);
   }
 
   console.log("invoking $LATEST...");
