@@ -1,5 +1,5 @@
 #!/bin/bash
-declare -a folders=("csharp" "java" "python" "golang" "nodejs6" "nodejs6-diff-package-size")
+declare -a folders=("python" "nodejs6" "nodejs6-diff-package-size")
 
 export AWS_PROFILE=personal
 
@@ -9,7 +9,7 @@ do
   do
     cd $folder
     pwd
-    
+
     sls deploy
 
     cd ..
