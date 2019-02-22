@@ -1,5 +1,5 @@
 #!/bin/bash
-declare -a folders=("python" "nodejs6" "nodejs6-diff-package-size")
+declare -a folders=("python" "nodejs6")
 
 export AWS_PROFILE=personal
 
