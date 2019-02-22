@@ -1,16 +1,15 @@
 'use strict';
 
-const co      = require('co');
-const AWS     = require('aws-sdk');
+const AWS = require('aws-sdk');
 AWS.config.region = 'eu-west-1';
-const Lambda  = new AWS.Lambda();
+const Lambda = new AWS.Lambda();
+const { PerformanceObserver, performance } = require('perf_hooks');
+const fs = require("fs");
 
 let functions = [];
 
-let listFunctions = co.wrap(function* (marker, acc) {
-  acc = acc || [];
-
-  let resp = yield Lambda.listFunctions({ Marker: marker, MaxItems: 100 }).promise();
+let listFunctions = async function (marker, acc = []) {
+  let resp = await Lambda.listFunctions({ Marker: marker, MaxItems: 100 }).promise();
 
   let functions = resp.Functions
     .map(f => f.FunctionName)
@@ -19,27 +18,39 @@ let listFunctions = co.wrap(function* (marker, acc) {
   acc = acc.concat(functions);
 
   if (resp.NextMarker) {
-    return yield listFunctions(resp.NextMarker, acc);
+    return await listFunctions(resp.NextMarker, acc);
   } else {
     return acc;
   }
-});
+};
 
-let run = co.wrap(function* () {
+let run = async function () {
   if (functions.length == 0) {
     console.log("fetching relevant functions...");
 
-    functions = yield listFunctions();
+    functions = await listFunctions();
     console.log(`found ${functions.length} functions`);
   }
 
   console.log("invoking $LATEST...");
   for (let func of functions) {
-    yield Lambda.invoke({
+    performance.mark(`${func}-start`);
+
+    await Lambda.invoke({
       FunctionName: func,
       InvocationType: "Event"
-    }).promise();
+    }).promise()
+
+    performance.mark(`${func}-end`);
+    performance.measure(func, `${func}-start`, `${func}-end`);
+  }
+};
+
+const obs = new PerformanceObserver((list, observer) => {
+  for (let entry of list.getEntries()) {
+    fs.appendFileSync('invoke-functions.csv', `${entry.name},${Date.now()},${entry.duration}\n`);
   }
 });
+obs.observe({ entryTypes: ['measure'], buffered: true });
 
 run();
