@@ -5,6 +5,9 @@ export AWS_PROFILE=personal
 
 for i in `seq 1 10`;
 do
+  echo ""
+  echo "====== Iteration ${i} ======"
+
   for folder in "${folders[@]}"
   do
     cd $folder
