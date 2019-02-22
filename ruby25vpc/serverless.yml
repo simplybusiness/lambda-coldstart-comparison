@@ -1,0 +1,47 @@
+service: aws-coldstart-ruby25vpc
+
+provider:
+  name: aws
+  runtime: ruby2.5
+  versionFunctions: false
+  region: eu-west-1
+
+functions:
+  outside-128:
+    handler: handler.hello
+    memorySize: 128
+
+  outside-512:
+    handler: handler.hello
+    memorySize: 512
+
+  outside-1536:
+    handler: handler.hello
+    memorySize: 1536
+
+  inside-128:
+    handler: handler.hello
+    memorySize: 128
+    vpc:
+      securityGroupIds:
+        - YOUR_ID
+      subnetIds:
+        - YOUR_ID
+
+  inside-512:
+    handler: handler.hello
+    memorySize: 512
+    vpc:
+      securityGroupIds:
+        - YOUR_ID
+      subnetIds:
+        - YOUR_ID
+
+  inside-1536:
+    handler: handler.hello
+    memorySize: 1536
+    vpc:
+      securityGroupIds:
+        - YOUR_ID
+      subnetIds:
+        - YOUR_ID
