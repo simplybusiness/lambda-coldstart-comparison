@@ -24,6 +24,10 @@ let listFunctions = async function (marker, acc = []) {
   }
 };
 
+// Fairly naive implementation, but it will do.
+// See https://gist.github.com/guilhermepontes/17ae0cc71fa2b13ea8c20c94c5c35dc4
+const shuffleArray = arr => arr.sort(() => Math.random() - 0.5);
+
 let run = async function () {
   if (functions.length == 0) {
     console.log("fetching relevant functions...");
@@ -33,7 +37,7 @@ let run = async function () {
   }
 
   console.log("invoking $LATEST...");
-  for (let func of functions) {
+  for (let func of shuffleArray(functions)) {
     performance.mark(`${func}-start`);
 
     await Lambda.invoke({
