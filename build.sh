@@ -10,7 +10,7 @@ do
     cd $folder
     pwd
 
-    sls deploy
+    sls deploy --force
 
     cd ..
   done
