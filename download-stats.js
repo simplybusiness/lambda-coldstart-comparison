@@ -6,7 +6,7 @@ AWS.config.region = 'eu-west-1';
 const cloudwatch  = new AWS.CloudWatch();
 const Lambda      = new AWS.Lambda();
 
-const START_TIME = new Date('2017-06-07T01:00:00.000Z');
+const START_TIME = new Date('2019-02-22T16:00:00.000Z');
 const DAYS = 2;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
