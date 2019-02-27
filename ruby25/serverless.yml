@@ -5,6 +5,14 @@ provider:
   runtime: ruby2.5
   versionFunctions: false
   region: eu-west-1
+  tracing: true
+  iamRoleStatements:
+    - Effect: "Allow" # xray permissions (required)
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
 
 functions:
   memory-128:
@@ -26,3 +34,6 @@ functions:
   memory-1536:
     handler: handler.hello
     memorySize: 1536
+
+plugins:
+  - serverless-plugin-tracing
