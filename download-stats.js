@@ -1,12 +1,13 @@
 'use strict';
 
+const header = require('./download-header');
+
 const _           = require('lodash');
 const AWS         = require('aws-sdk');
 AWS.config.region = 'eu-west-1';
 const cloudwatch  = new AWS.CloudWatch();
 const Lambda      = new AWS.Lambda();
 
-const START_TIME = new Date('2019-02-22T16:00:00.000Z');
 const DAYS = 2;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -38,7 +39,7 @@ let getFuncStats = async function(funcName) {
   for (let i = 0; i < DAYS; i++) {
     // CloudWatch only allows us to query 1440 data points per request, which
     // at 1 min period is 24 hours
-    let startTime = addDays(START_TIME, i);
+    let startTime = addDays(header.START_TIME, i);
     let endTime   = addDays(startTime, 1);
     let oneDayStats = await getStats(startTime, endTime);
 
@@ -48,25 +49,7 @@ let getFuncStats = async function(funcName) {
   return _.sortBy(stats, s => s.timestamp);
 };
 
-let listFunctions = async function(marker, acc) {
-  acc = acc || [];
-
-  let resp = await Lambda.listFunctions({ Marker: marker, MaxItems: 100 }).promise();
-
-  let functions = resp.Functions
-    .map(f => f.FunctionName)
-    .filter(fn => fn.includes("aws-coldstart") && !fn.endsWith("run"));
-
-  acc = acc.concat(functions);
-
-  if (resp.NextMarker) {
-    return await listFunctions(resp.NextMarker, acc);
-  } else {
-    return acc;
-  }
-};
-
-listFunctions()
+header.listFunctions()
   .then(async function(funcs) {
     for (let func of funcs) {
       let stats = await getFuncStats(func);
