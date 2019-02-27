@@ -40,9 +40,9 @@ let run = async function () {
   for (let func of shuffleArray(functions)) {
     performance.mark(`${func}-start`);
 
-    await Lambda.invoke({
+    const res = await Lambda.invoke({
       FunctionName: func,
-      InvocationType: "Event"
+      InvocationType: "RequestResponse"
     }).promise()
 
     performance.mark(`${func}-end`);
