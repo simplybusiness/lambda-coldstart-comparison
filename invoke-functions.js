@@ -52,7 +52,7 @@ let run = async function () {
 
 const obs = new PerformanceObserver((list, observer) => {
   for (let entry of list.getEntries()) {
-    fs.appendFileSync('invoke-functions.csv', `${entry.name},${Date.now()},${entry.duration}\n`);
+    fs.appendFileSync('local-call-durations.csv', `${entry.name},${Date.now()},${entry.duration}\n`);
   }
 });
 obs.observe({ entryTypes: ['measure'], buffered: true });
