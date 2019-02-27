@@ -13,4 +13,7 @@ golang/bin
 
 invoke-functions.csv
 package-lock.json
-sb-results.csv
+
+cw-durations.csv
+local-call-durations.csv
+trace-durations.csv
