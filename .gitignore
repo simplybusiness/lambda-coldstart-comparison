@@ -14,7 +14,7 @@ golang/bin
 invoke-functions.csv
 package-lock.json
 
-cw-durations.csv
-local-call-durations.csv
+gateway-integration-latencies.csv
+lambda-durations.csv
 local-endpoint-call-durations.csv
-trace-durations.csv
+xray-trace-durations.csv
