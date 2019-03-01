@@ -18,5 +18,6 @@ do
     cd ..
   done
 
-  node invoke-functions.js
+  # node invoke-functions.js
+  node call-endpoints.js
 done
