@@ -26,6 +26,8 @@
     "plotly": "^1.0.6"
   },
   "devDependencies": {
+    "node-fetch": "^2.3.0",
+    "serverless-api-gateway-cloudwatch-settings": "^1.2.0",
     "serverless-plugin-tracing": "^2.0.0"
   }
 }

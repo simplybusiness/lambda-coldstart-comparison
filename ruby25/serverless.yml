@@ -14,10 +14,16 @@ provider:
       Resource:
         - "*"
 
+custom:
+  apiGatewayCloudWatchSettings:
+    metricsEnabled: true
+
 functions:
   memory-128:
     handler: handler.hello
     memorySize: 128
+    events:
+      - http: GET /memory-128
 
   memory-256:
     handler: handler.hello
@@ -26,6 +32,8 @@ functions:
   memory-512:
     handler: handler.hello
     memorySize: 512
+    events:
+      - http: GET /memory-512
 
   memory-1024:
     handler: handler.hello
@@ -34,6 +42,9 @@ functions:
   memory-1536:
     handler: handler.hello
     memorySize: 1536
+    events:
+      - http: GET /memory-1536
 
 plugins:
   - serverless-plugin-tracing
+  - serverless-api-gateway-cloudwatch-settings

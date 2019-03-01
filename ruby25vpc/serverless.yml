@@ -14,18 +14,28 @@ provider:
       Resource:
         - "*"
 
+custom:
+  apiGatewayCloudWatchSettings:
+    metricsEnabled: true
+
 functions:
   outside-128:
     handler: handler.hello
     memorySize: 128
+    events:
+      - http: GET /outside-128
 
   outside-512:
     handler: handler.hello
     memorySize: 512
+    events:
+      - http: GET /outside-512
 
   outside-1536:
     handler: handler.hello
     memorySize: 1536
+    events:
+      - http: GET /outside-1536
 
   inside-128:
     handler: handler.hello
@@ -35,6 +45,8 @@ functions:
         - YOUR_ID
       subnetIds:
         - YOUR_ID
+    events:
+      - http: GET /inside-128
 
   inside-512:
     handler: handler.hello
@@ -44,6 +56,8 @@ functions:
         - YOUR_ID
       subnetIds:
         - YOUR_ID
+    events:
+      - http: GET /inside-512
 
   inside-1536:
     handler: handler.hello
@@ -53,6 +67,9 @@ functions:
         - YOUR_ID
       subnetIds:
         - YOUR_ID
+    events:
+      - http: GET /inside-1536
 
 plugins:
   - serverless-plugin-tracing
+  - serverless-api-gateway-cloudwatch-settings
