@@ -59,7 +59,7 @@ header.listGateways()
       let resources = await header.listResources(restApi.id);
       for (let resource of resources) {
         let stats = await getEndpointStats({apiName: restApi.name, ...resource});
-        stats.forEach(stat => console.log(`${restApi.name.replace(/^dev-/, '')}-${resource.name},${stat.timestamp},${stat.value}`));
+        stats.forEach(stat => console.log(`${restApi.name.replace(/^dev-/, '')}-dev-${resource.name},${stat.timestamp},${stat.value}`));
       }
     }
   });

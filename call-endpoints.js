@@ -24,7 +24,7 @@ let run = async function () {
     for (let resource of resources) {
       endpoints.push({
         url: `https://${restApi.id}.execute-api.eu-west-1.amazonaws.com/dev/${resource.name}`,
-        func: `${restApi.name.replace(/^dev-/, '')}-${resource.name}`,
+        func: `${restApi.name.replace(/^dev-/, '')}-dev-${resource.name}`,
       })
     }
   }
