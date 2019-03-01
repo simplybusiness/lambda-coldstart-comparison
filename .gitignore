@@ -16,4 +16,5 @@ package-lock.json
 
 cw-durations.csv
 local-call-durations.csv
+local-endpoint-call-durations.csv
 trace-durations.csv
