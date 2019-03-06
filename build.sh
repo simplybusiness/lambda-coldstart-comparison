@@ -1,9 +1,9 @@
 #!/bin/bash
-declare -a folders=("python" "nodejs6" "ruby25" "ruby25vpc")
+declare -a folders=("ruby25" "nodejs6" "ruby25vpc")
 
 # export AWS_PROFILE=personal
 
-for i in `seq 1 10`;
+for i in `seq 1 50`;
 do
   echo ""
   echo "====== Iteration ${i} ======"
@@ -18,6 +18,6 @@ do
     cd ..
   done
 
-  # node invoke-functions.js
-  node call-endpoints.js
+  node invoke-functions.js
+  # node call-endpoints.js
 done
