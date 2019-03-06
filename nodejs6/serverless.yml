@@ -5,6 +5,14 @@ provider:
   runtime: nodejs6.10
   versionFunctions: false
   region: eu-west-1
+  tracing: true
+  iamRoleStatements:
+    - Effect: "Allow" # xray permissions (required)
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
 
 functions:
   memory-128:
@@ -23,6 +31,13 @@ functions:
     handler: handler.hello
     memorySize: 1024
 
-  memory-1536:
+  memory-2048:
     handler: handler.hello
-    memorySize: 1536
+    memorySize: 2048
+
+  memory-3008:
+    handler: handler.hello
+    memorySize: 3008
+
+plugins:
+  - serverless-plugin-tracing
