@@ -31,14 +31,15 @@ let getFuncTraces = async function(funcName) {
 // {
 //   functionName: 'aws-coldstart-ruby25vpc-dev-outside-1536',
 //   traceId: '1-5c7954d9-560bf598fb3f88607c3751e0',
-//   times:
+//   timestamp: '2019-03-06T15:38:27.308Z',
+//   durations:
 //     [
-//       { name: 'AWS::Lambda', id: '2cd1290ee882c1b0', time: '376.0' },
-//       { name: 'AWS::Lambda::Function', id: '3f252a557b9d011f', time: '2.5' },
-//       { name: 'Overhead', id: '51b1a64aa8e9f0f3', time: '0.7' },
-//       { name: 'Initialization', id: '1b94ef3ef1233694', time: '173.4' },
-//       { name: 'Invocation', id: 'f7a89c8152f3451b', time: '1.3' },
-//       { name: 'Setup', id: null, time: '200.1' }
+//       { name: 'AWS::Lambda', id: '2cd1290ee882c1b0', duration: '376.0' },
+//       { name: 'AWS::Lambda::Function', id: '3f252a557b9d011f', duration: '2.5' },
+//       { name: 'Overhead', id: '51b1a64aa8e9f0f3', duration: '0.7' },
+//       { name: 'Initialization', id: '1b94ef3ef1233694', duration: '173.4' },
+//       { name: 'Invocation', id: 'f7a89c8152f3451b', duration: '1.3' },
+//       { name: 'Setup', id: null, duration: '200.1' }
 //     ]
 // ]
 const getTraceDetails = async function(traceIds) {
@@ -61,6 +62,7 @@ const getTraceDetails = async function(traceIds) {
     const lambdaSegmentDocument = JSON.parse(lambdaSegment.Document);
 
     const functionName = lambdaSegmentDocument.name;
+    const timestamp = (new Date(lambdaSegmentDocument.start_time * 1000)).toISOString();
 
     const lambdaFunctionSegment = trace.Segments.find(segment => JSON.parse(segment.Document).origin === 'AWS::Lambda::Function');
     const lambdaFunctionSegmentDocument = JSON.parse(lambdaFunctionSegment.Document);
@@ -72,34 +74,35 @@ const getTraceDetails = async function(traceIds) {
       {
         name: lambdaSegmentDocument.origin,
         id: lambdaSegment.Id,
-        time: lambdaSegmentTime,
+        duration: lambdaSegmentTime,
       },
       {
         name: lambdaFunctionSegmentDocument.origin,
         id: lambdaFunctionSegment.Id,
-        time: lambdaFunctionSegmentTime,
+        duration: lambdaFunctionSegmentTime,
       },
     ]
     const subsegments = lambdaFunctionSegmentDocument.subsegments.map(subsegment => {
       return {
         name: subsegment.name,
         id: subsegment.id,
-        time: ((subsegment.end_time - subsegment.start_time) * 1000).toFixed(1),
+        duration: ((subsegment.end_time - subsegment.start_time) * 1000).toFixed(1),
       }
     });
 
-    const initializationTime = subsegments.find(subsegment => subsegment.name === 'Initialization').time;
+    const initializationTime = subsegments.find(subsegment => subsegment.name === 'Initialization').duration;
 
     const setup = {
       name: 'Setup',
       id: null,
-      time: (lambdaSegmentTime - lambdaFunctionSegmentTime - initializationTime).toFixed(1),
+      duration: (lambdaSegmentTime - lambdaFunctionSegmentTime - initializationTime).toFixed(1),
     };
 
     return {
       functionName,
       traceId,
-      times: segments.concat(subsegments).concat([setup])
+      timestamp,
+      durations: segments.concat(subsegments).concat([setup])
     }
   });
 
@@ -108,8 +111,8 @@ const getTraceDetails = async function(traceIds) {
 
 // Output will be a in CSV format, with the following columns:
 //
-// function,total_time,setup_time,initialization_time,execution_time
-// aws-coldstart-ruby25-dev-memory-512,370.0,200.3,167.5,2.2
+// function,timestamp,total_time,setup_time,initialization_time,execution_time
+// aws-coldstart-ruby25-dev-memory-256,2019-03-06T15:36:12.078Z,206.0,88.2,98.2,19.6
 header.listFunctions()
   .then(async function(funcs) {
     for (let func of funcs) {
@@ -119,10 +122,11 @@ header.listFunctions()
       details.forEach((trace) => {
         const output = [
           trace.functionName,
-          trace.times.find(info => info.name == 'AWS::Lambda').time,
-          trace.times.find(info => info.name == 'Setup').time,
-          trace.times.find(info => info.name == 'Initialization').time,
-          trace.times.find(info => info.name == 'AWS::Lambda::Function').time,
+          trace.timestamp,
+          trace.durations.find(info => info.name == 'AWS::Lambda').duration,
+          trace.durations.find(info => info.name == 'Setup').duration,
+          trace.durations.find(info => info.name == 'Initialization').duration,
+          trace.durations.find(info => info.name == 'AWS::Lambda::Function').duration,
         ];
         console.log(output.join(','));
       });
