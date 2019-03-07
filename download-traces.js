@@ -65,6 +65,17 @@ const getTraceDetails = async function(traceIds) {
     const timestamp = (new Date(lambdaSegmentDocument.start_time * 1000)).toISOString();
 
     const lambdaFunctionSegment = trace.Segments.find(segment => JSON.parse(segment.Document).origin === 'AWS::Lambda::Function');
+
+    if (! lambdaFunctionSegment) {
+      console.error('Missing lambda function segment for', traceId);
+      return {
+        functionName,
+        traceId,
+        timestamp,
+        durations: [],
+      }
+    }
+
     const lambdaFunctionSegmentDocument = JSON.parse(lambdaFunctionSegment.Document);
 
     const lambdaSegmentTime = ((lambdaSegmentDocument.end_time - lambdaSegmentDocument.start_time) * 1000).toFixed(1);
@@ -90,7 +101,19 @@ const getTraceDetails = async function(traceIds) {
       }
     });
 
-    const initializationTime = subsegments.find(subsegment => subsegment.name === 'Initialization').duration;
+    const initializationSubsegment = subsegments.find(subsegment => subsegment.name === 'Initialization');
+
+    if (! initializationSubsegment) {
+      console.error('Missing Initialization subsegment for', traceId);
+      return {
+        functionName,
+        traceId,
+        timestamp,
+        durations: [],
+      }
+    }
+
+    const initializationTime = initializationSubsegment.duration;
 
     const setup = {
       name: 'Setup',
@@ -120,15 +143,17 @@ header.listFunctions()
       let details = await getTraceDetails(stats.map(stat => stat.id));
 
       details.forEach((trace) => {
-        const output = [
-          trace.functionName,
-          trace.timestamp,
-          trace.durations.find(info => info.name == 'AWS::Lambda').duration,
-          trace.durations.find(info => info.name == 'Setup').duration,
-          trace.durations.find(info => info.name == 'Initialization').duration,
-          trace.durations.find(info => info.name == 'AWS::Lambda::Function').duration,
-        ];
-        console.log(output.join(','));
+        if (trace.durations.length > 0) {
+          const output = [
+            trace.functionName,
+            trace.timestamp,
+            trace.durations.find(info => info.name == 'AWS::Lambda').duration,
+            trace.durations.find(info => info.name == 'Setup').duration,
+            trace.durations.find(info => info.name == 'Initialization').duration,
+            trace.durations.find(info => info.name == 'AWS::Lambda::Function').duration,
+          ];
+          console.log(output.join(','));
+        }
       });
     }
   });
