@@ -38,13 +38,15 @@ let boxPlot = co.wrap(function*() {
   let rows = _.sortBy(yield readStats(), r => r.memorySize);
 
   let byLang = {
-    python: { y: [], x: [], type: "box", boxpoints: "all", name: "python" },
+    ruby25: { y: [], x: [], type: "box", boxpoints: "all", name: "ruby25" },
     nodejs6: { y: [], x: [], type: "box", boxpoints: "all", name: "nodejs6" },
   }
 
   rows.forEach(row => {
-    byLang[row.lang].y.push(row.value);
-    byLang[row.lang].x.push(`${row.memorySize}MB`);
+    if (Object.keys(byLang).includes(row.lang)) {
+      byLang[row.lang].y.push(row.value);
+      byLang[row.lang].x.push(`${row.memorySize}MB`);
+    }
   });
 
   let data = _.values(byLang);
