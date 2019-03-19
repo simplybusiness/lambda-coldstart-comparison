@@ -1,5 +1,5 @@
 #!/bin/bash
-declare -a folders=("python" "nodejs6" "ruby25" "ruby25vpc")
+declare -a folders=("ruby25" "nodejs6" "ruby25vpc")
 
 for folder in "${folders[@]}"
 do

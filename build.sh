@@ -3,7 +3,7 @@ declare -a folders=("ruby25" "nodejs6" "ruby25vpc")
 
 # export AWS_PROFILE=personal
 
-for i in `seq 1 50`;
+for i in `seq 1 100`;
 do
   echo ""
   echo "====== Iteration ${i} ======"
@@ -19,5 +19,4 @@ do
   done
 
   node invoke-functions.js
-  # node call-endpoints.js
 done

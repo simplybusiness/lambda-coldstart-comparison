@@ -5,7 +5,7 @@ AWS.config.region = 'eu-west-1';
 const Lambda = new AWS.Lambda();
 const APIGateway = new AWS.APIGateway();
 
-const START_TIME = new Date('2019-02-27T09:00:00.000Z');
+const START_TIME = new Date('2019-03-12T10:20:00.000Z');
 
 const listFunctions = async function (marker, acc) {
   acc = acc || [];
